@@ -1,44 +1,66 @@
-var bullet , wall ;
-var speed , weight;
-var thickness;
+var helicopterIMG, helicopterSprite, packageSprite,packageIMG;
+var packageBody,ground
+const Engine = Matter.Engine;
+const World = Matter.World;
+const Bodies = Matter.Bodies;
+const Body = Matter.Body;
+
+function preload()
+{
+	helicopterIMG=loadImage("helicopter.png")
+	packageIMG=loadImage("package.png")
+}
 
 function setup() {
-  createCanvas(1600,400);
-  bullet=createSprite(50, 200, 20, 10);
-  bullet.shapeColor="white";
-  wall=createSprite(1200,200,thickness,height/2);
-  wall.shapeColor="grey";
-  speed=random(223,321);
-  weight=random(30,52);
-  bullet.velocityX=speed;
-  thickness=random(22,83);
+	createCanvas(800, 700);
+	rectMode(CENTER);
+	
+
+	packageSprite=createSprite(width/2, 80, 10,10);
+	packageSprite.addImage(packageIMG)
+	packageSprite.scale=0.2
+
+	helicopterSprite=createSprite(width/2, 200, 10,10);
+	helicopterSprite.addImage(helicopterIMG)
+	helicopterSprite.scale=0.6
+
+	groundSprite=createSprite(width/2, height-35, width,10);
+	groundSprite.shapeColor=color(255)
+
+
+	engine = Engine.create();
+	world = engine.world;
+
+	packageBody = Bodies.circle(width/2 , 200 , 5 , {restitution:0.5, isStatic:true});
+	World.add(world, packageBody);
+	
+
+	//Create a Ground
+	ground = Bodies.rectangle(width/2, 650, width, 10 , {isStatic:true} );
+ 	World.add(world, ground);
+
+
+	Engine.run(engine);
   
 }
+
 
 function draw() {
+  rectMode(CENTER);
   background(0);
-
-  if(hasCollided(bullet,wall)){
-    bullet.velocityX=0;
-    var damage=0.5*weight*speed*speed/(thickness*thickness*thickness);
-    if(damage>10){
-      wall.shapeColor="red";
-    }
-    if(damage<10){
-      wall.shapeColor="green";
-    }
-  }
-  
- 
-
+  packageSprite.x= packageBody.position.x 
+  packageSprite.y= packageBody.position.y 
   drawSprites();
+ 
 }
 
-function hasCollided(bullet2,wall2){
-  bulletRightEdge=bullet2.x+bullet2.width;
-  wallLeftEdge=wall2.x;
-  if(bulletRightEdge>=wallLeftEdge){
-    return true;
+function keyPressed() {
+ if (keyCode === DOWN_ARROW) {
+    // Look at the hints in the document and understand how to make the package body fall only on
+    Matter.Body.setStatic(packageBody,false);
   }
-  return false;
 }
+//restitution
+
+
+
